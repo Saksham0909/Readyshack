@@ -1,0 +1,21 @@
+body {
+  background-color: rgb(222, 235, 255);
+}
+
+h1, p {
+  background-color: white;
+}
+
+a{
+  text-decoration: none;
+}
+
+.validExp {
+  background-color: rgb(144, 238, 144);
+  opacity: 0.5;
+}
+
+.invalidExp {
+  background-color: rgb(255, 182, 193);
+  opacity: 0.5;
+}

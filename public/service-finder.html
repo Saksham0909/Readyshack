@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Readyshack</title>
+
+    <!-- ------------------------------------------------------ Style sheets ------------------------------------------------------ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="style/style.css">
+
+    <!-- ------------------------------------------------------ Scripts ------------------------------------------------------ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="script/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    
+    <!-- ------------------------------------------------------ JQuery starts ------------------------------------------------------ -->
+    <script>
+        $(document).ready(function () {
+            // ------------------------------------------------ Logging in user function ------------------------------------------------
+            var loggedUser = "";
+            function setActiveUser() {
+                if (localStorage.getItem("activeuser") == null && localStorage.getItem("activetype") != "availer") {
+                    location.href = "index.html";
+                    return;
+                }
+                loggedUser = localStorage.getItem("activeuser");
+            }
+            setActiveUser();
+        });
+    </script>
+
+    <!-- ------------------------------------------------------ JQuery ends ------------------------------------------------------ -->
+    
+    <!-- ------------------------------------------------------ AngularJS starts ------------------------------------------------------ -->
+    <script>
+        var module = angular.module("myModule", []);
+        module.controller("myController", function ($scope, $http) {
+            $scope.jsonCityArray;
+            $scope.jsonServicesArray;
+
+            // ------------------------------------------------ Fetch cities function ------------------------------------------------
+            $scope.fetchCities = function () {
+                var url = "/fetch-cities";
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    $scope.jsonCityArray = response.data;
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+
+            // ------------------------------------------------ Fetch services function ------------------------------------------------
+            $scope.fetchServices = function () {
+                var url = "/fetch-services-book";
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    $scope.jsonServicesArray = response.data;
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+
+            // ------------------------------------------------ Fetch provider function ------------------------------------------------
+            $scope.fetchProviders = function () {
+                var url = "/fetch-providers?cityselected=" + $scope.txtcity.city + "&serviceselected=" + $scope.txtservice.services;
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    $scope.jsonProvidersArray = response.data;
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+
+            // ------------------------------------------------ Get selected provider index function ------------------------------------------------
+            $scope.getIndex = function (index) {
+                $scope.selectedData = $scope.jsonProvidersArray[index];
+            }
+        });
+    </script>
+
+    <!-- ------------------------------------------------------ AngularJS ends ------------------------------------------------------ -->
+</head>
+
+<body ng-app="myModule" ng-controller="myController" ng-init="fetchCities();fetchServices();">
+    <!-- ------------------------------------------------------ Navbar ------------------------------------------------------ -->
+    <nav class="navbar bg-body-tertiary mb-4">
+        <div class="container-fluid px-3 py-2">
+            <a class="navbar-brand" href="#">
+                <img src="pics/logo.png" class="d-inline-block align-text-top me-2">
+                Readyshack
+            </a>
+        </div>
+    </nav>
+
+    <!-- ------------------------------------------------------ Services selection ------------------------------------------------------ -->
+    <div class="container">
+
+        <div class="row mb-3">
+            <h1 class="text-center">Service finder</h1>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4 mb-3 input-group-lg">
+                <label for="txtcity" class="form-label">City</label>
+                <select class="form-select" id="txtcity" ng-options="obj.city for obj in jsonCityArray"
+                    ng-model="txtcity">
+                    <option selected>Select</option>
+                </select>
+            </div>
+
+            <div class="col-md-8 mb-3 input-group-lg">
+                <label for="txtservice" class="form-label">Service</label>
+                <select class="form-select" id="txtservice" ng-options="obj.services for obj in jsonServicesArray" ng-model="txtservice">
+                    <option selected>Select</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3 text-center">
+            <div class="col">
+                <button type="button" class="btn btn-primary" ng-click="fetchProviders();">Find Providers</button>
+            </div>
+        </div>
+
+        <!-- ------------------------------------------------------ Provider cards ------------------------------------------------------ -->
+        <div class="row">
+            <div class="col-md-4" ng-repeat="obj in jsonProvidersArray">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Provider name:- {{obj.name}}</h5>
+                        <h5 class="card-title">Contact:- {{obj.mobile}}</h5>
+                        <h5 class="card-title">Available between:- {{obj.ahours}}</h5>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#providerDetails" ng-click="getIndex($index);">Show more details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ------------------------------------------------------ Provider details modal ------------------------------------------------------ -->
+        <div class="modal fade" id="providerDetails" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Provider details</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="pics/profile-icon.png" class="rounded mx-auto d-block mt-3 mb-5">
+
+
+                        <div class="row mt-2">
+                            <div class="col-md-10 offset-md-1">
+                                <p>Name:- {{selectedData.name}}</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-10 offset-md-1">
+                                <p>Contact:- {{selectedData.mobile}}</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-10 offset-md-1">
+                                <p>Email:- {{selectedData.email}}</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-10 offset-md-1">
+                                <p>Address:- {{selectedData.address}}</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-10 offset-md-1">
+                                <p>City:- {{selectedData.city}}</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-10 offset-md-1">
+                                <p>Available between:- {{selectedData.ahours}}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

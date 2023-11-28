@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Readyshack</title>
+
+  <!-- ------------------------------------------------------ Style sheets ------------------------------------------------------ -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style/style.css">
+
+  <!-- ------------------------------------------------------ Scripts ------------------------------------------------------ -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  
+  <!-- ------------------------------------------------------ JQuery starts ------------------------------------------------------ -->
+  <script>
+    $(document).ready(function () {
+      // ------------------------------------------------ Logging in user function ------------------------------------------------
+      var loggedUser = "";
+      function setActiveUser() {
+        if (localStorage.getItem("activeuser") == null && localStorage.getItem("activetype") != "provider") {
+          location.href = "index.html";
+          return;
+        }
+        loggedUser = localStorage.getItem("activeuser");
+        $("#welcomeUser").html("Welcome! " + loggedUser);
+      }
+      setActiveUser();
+      $("#txtemail").val(loggedUser).prop("readonly", true);
+
+      // ------------------------------------------------ Show old password function ------------------------------------------------
+      var oldpwdflag = true;
+
+      $("#oldshow").click(function () {
+        if (oldpwdflag == false) {
+          $("#oldshoweye").addClass("fa-eye").removeClass("fa-eye-slash");
+          $("#oldpassword").prop("type", "password");
+          oldpwdflag = true;
+        } else {
+          $("#oldshoweye").removeClass("fa-eye").addClass("fa-eye-slash");
+          $("#oldpassword").prop("type", "text");
+          oldpwdflag = false;
+        }
+      });
+
+      // ------------------------------------------------ Show new password 1 function ------------------------------------------------
+      var newpwd1flag = true;
+
+      $("#newshow1").click(function () {
+        if (newpwd1flag == false) {
+          $("#newshow1eye").addClass("fa-eye").removeClass("fa-eye-slash");
+          $("#newpassword1").prop("type", "password");
+          newpwd1flag = true;
+        } else {
+          $("#newshow1eye").removeClass("fa-eye").addClass("fa-eye-slash");
+          $("#newpassword1").prop("type", "text");
+          newpwd1flag = false;
+        }
+      });
+
+      // ------------------------------------------------ Show new password 2 function ------------------------------------------------
+      var newpwd2flag = true;
+
+      $("#newshow2").click(function () {
+        if (newpwd2flag == false) {
+          $("#newshow2eye").addClass("fa-eye").removeClass("fa-eye-slash");
+          $("#newpassword2").prop("type", "password");
+          newpwd2flag = true;
+        } else {
+          $("#newshow2eye").removeClass("fa-eye").addClass("fa-eye-slash");
+          $("#newpassword2").prop("type", "text");
+          newpwd2flag = false;
+        }
+      });
+
+      // ------------------------------------------------ Change password function ------------------------------------------------
+      $("#savebtn").click(function () {
+        var email = $("#txtemail").val();
+        var oldpassword = $("#oldpassword").val();
+        var newpassword1 = $("#newpassword1").val();
+        var newpassword2 = $("#newpassword2").val();
+
+        if (email == "" || oldpassword == "" || newpassword1 == "" || newpassword2 == "") {
+          $("#errpassword").html("Required fields cannot be empty");
+        } else {
+          if (oldpassword == newpassword1 || oldpassword == newpassword2) {
+            $("#errpassword").html("Old password and new password cannot be same");
+          } else if (newpassword1 != newpassword2) {
+            $("#errpassword").html("New password doesn't match confirmed password");
+          } else if (oldpassword != newpassword1 && newpassword1 == newpassword2) {
+
+            var obj = {
+              type: "get",
+              url: "/changepassword",
+              data: {
+                emailsent: email,
+                oldpasswordsent: oldpassword,
+                confirmedpassword: newpassword2
+              }
+            }
+
+            $.ajax(obj).done(function (resp) {
+              $("#errpassword").html(resp);
+            }).fail(function (err) {
+              $("#errpassword").html(err);
+            });
+          }
+        }
+      });
+
+      // ------------------------------------------------ Logout function ------------------------------------------------
+      $("#logout").click(function () {
+        localStorage.removeItem("activeuser");
+        localStorage.removeItem("activetype");
+        location.replace("/index.html");
+      });
+    });
+  </script>
+
+  <!-- ------------------------------------------------------ JQuery ends ------------------------------------------------------ -->
+</head>
+
+<body>
+  <!-- ------------------------------------------------------ Navbar ------------------------------------------------------ -->
+  <nav class="navbar bg-body-tertiary mb-4">
+    <div class="container-fluid px-3 py-2">
+      <a class="navbar-brand" href="#">
+        <img src="pics/logo.png" class="d-inline-block align-text-top me-2">
+        Readyshack
+      </a>
+      <form class="d-flex">
+        <span id="welcomeUser" class="text-end mt-2"></span>
+        <button class="btn btn-primary ms-3" type="button" id="logout">Logout</button>
+      </form>
+    </div>
+  </nav>
+
+  <!-- ------------------------------------------------------ Providers dashboard cards ------------------------------------------------------ -->
+  <div class="container">
+    <div class="row">
+      <h1 class="text-center mb-4">Providers dashboard</h1>
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <center>
+              <img src="pics/profile-icon.png" class="rounded mt-4 mb-4 img-fluid">
+              <a href="profile-provider.html" class="btn btn-primary">Profile</a>
+            </center>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <center>
+              <img src="pics/service-icon-1.png" class="rounded mt-4 mb-4 img-fluid">
+              <a href="add-services.html" class="btn btn-primary">Add Services</a>
+            </center>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <center>
+              <img src="pics/service-icon-2.png" class="rounded mt-4 mb-4 img-fluid">
+              <a href="service-manager.html" class="btn btn-primary">Manage Services</a>
+            </center>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <center>
+              <img src="pics/settings-icon.png" class="rounded mt-4 mb-4 img-fluid">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#settings">
+                Settings
+              </button>
+            </center>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------ Change password modal ------------------------------------------------------ -->
+  <div class="modal fade" id="settings" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Change password</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+
+          <div class="row">
+            <div class="col-md-10 offset-md-1 mt-3 mb-3 input-group-lg">
+              <label for="email" class="form-label">Enter your email address</label>
+              <input type="email" class="form-control" id="txtemail">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-10 offset-md-1 mb-3">
+              <label for="oldpassword" class="form-label">Enter your old password</label>
+              <div class="input-group input-group-lg">
+                <input type="password" class="form-control" id="oldpassword">
+                <span id="oldshow" class="input-group-text">
+                  <i id="oldshoweye" class="fa-solid fa-eye"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-10 offset-md-1 mb-3">
+              <label for="newpassword1" class="form-label">Enter your new password</label>
+              <div class="input-group input-group-lg">
+                <input type="password" class="form-control" id="newpassword1">
+                <span id="newshow1" class="input-group-text">
+                  <i id="newshow1eye" class="fa-solid fa-eye"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-10 offset-md-1 mb-3">
+              <label for="newpassword2" class="form-label">Confirm your new password</label>
+              <div class="input-group input-group-lg">
+                <input type="password" class="form-control" id="newpassword2">
+                <span id="newshow2" class="input-group-text">
+                  <i id="newshow2eye" class="fa-solid fa-eye"></i>
+                </span>
+              </div>
+              <span id="errpassword">*</span>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="savebtn">Save password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

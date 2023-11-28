@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Readyshack</title>
+
+    <!-- ------------------------------------------------------ Style sheets ------------------------------------------------------ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="style/style.css">
+    
+    <!-- ------------------------------------------------------ Scripts ------------------------------------------------------ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="script/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    
+    <!-- ------------------------------------------------------ JQuery starts ------------------------------------------------------ -->
+    <script>
+        $(document).ready(function () {
+            // ------------------------------------------------ Logging in user function ------------------------------------------------
+            var loggedUser = "";
+            function setActiveUser() {
+                if (localStorage.getItem("activeuser") == null && localStorage.getItem("activetype") != "admin") {
+                    location.href = "index.html";
+                    return;
+                }
+                loggedUser = localStorage.getItem("activeuser");
+            }
+            setActiveUser();
+        });
+    </script>
+
+    <!-- ------------------------------------------------------ JQuery ends ------------------------------------------------------ -->
+
+    <!-- ------------------------------------------------------ AngularJS starts ------------------------------------------------------ -->
+    <script>
+        var module = angular.module("myModule", []);
+        module.controller("myController", function ($scope, $http) {
+            $scope.jsonArray;
+
+            // ------------------------------------------------ Fetch users function ------------------------------------------------
+            $scope.fetchUsersData = function () {
+                var url = "/fetch-users-data";
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    $scope.jsonArray = response.data;
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+
+            // ------------------------------------------------ Delete user function ------------------------------------------------
+            $scope.doDelete = function (email) {
+                if (confirm("Do you really want to delete this account!!!") == false)
+                    return;
+                var url = "/delete-users-data?email=" + email;
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    console.log(response.data);
+                    $scope.fetchUsersData();
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+
+            // ------------------------------------------------ Block user function ------------------------------------------------
+            $scope.doBlock = function (email) {
+                var url = "/block-users-data?email=" + email;
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    console.log(response.data);
+                    $scope.fetchUsersData();
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+
+            // ------------------------------------------------ Resume user function ------------------------------------------------
+            $scope.doResume = function (email) {
+                var url = "/resume-users-data?email=" + email;
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    console.log(response.data);
+                    $scope.fetchUsersData();
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+        });
+    </script>
+
+    <!-- ------------------------------------------------------ AngularJS ends ------------------------------------------------------ -->
+</head>
+
+<body ng-app="myModule" ng-controller="myController">
+    <!-- ------------------------------------------------------ Navbar ------------------------------------------------------ -->
+    <nav class="navbar bg-body-tertiary mb-4">
+        <div class="container-fluid px-3 py-2">
+            <a class="navbar-brand" href="#">
+                <img src="pics/logo.png" class="d-inline-block align-text-top me-2">
+                Readyshack
+            </a>
+        </div>
+    </nav>
+
+    <!-- ------------------------------------------------------ Donor details table ------------------------------------------------------ -->
+    <div class="container">
+        <div class="row">
+            <h1 class="text-center">Users panel</h1>
+        </div>
+        <div class="row mt-3 mb-4">
+            <center>
+                <button type="button" class="btn btn-primary" ng-click="fetchUsersData();">Fetch users data</button>
+            </center>
+        </div>
+        <table class="table table-light table-striped text-center">
+            <tr>
+                <th>S No.</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th>Date of sign in</th>
+                <th>Status</th>
+                <th>Operations</th>
+            </tr>
+            <tr ng-repeat="obj in jsonArray">
+                <td>{{$index+1}}</td>
+                <td>{{obj.email}}</td>
+                <td>{{obj.type}}</td>
+                <td>{{obj.dos.substring(0, 10)}}</td>
+                <td>{{obj.status}}</td>
+                <td>
+                    <button class="btn btn-primary ms-3" type="button" ng-click="doDelete(obj.email);">Delete</button>
+                    <button class="btn btn-primary ms-3" type="button" ng-click="doBlock(obj.email);">Block</button>
+                    <button class="btn btn-primary ms-3" type="button" ng-click="doResume(obj.email);">Resume</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+
+</html>

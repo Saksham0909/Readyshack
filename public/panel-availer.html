@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Readyshack</title>
+
+    <!-- ------------------------------------------------------ Style sheets ------------------------------------------------------ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="style/style.css">
+
+    <!-- ------------------------------------------------------ Scripts ------------------------------------------------------ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="script/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    
+    <!-- ------------------------------------------------------ JQuery starts ------------------------------------------------------ -->
+    <script>
+        $(document).ready(function () {
+            // ------------------------------------------------ Logging in user function ------------------------------------------------
+            var loggedUser = "";
+            function setActiveUser() {
+                if (localStorage.getItem("activeuser") == null && localStorage.getItem("activetype") != "admin") {
+                    location.href = "index.html";
+                    return;
+                }
+                loggedUser = localStorage.getItem("activeuser");
+            }
+            setActiveUser();
+        });
+    </script>
+
+    <!-- ------------------------------------------------------ JQuery ends ------------------------------------------------------ -->
+
+    <!-- ------------------------------------------------------ AngularJS starts ------------------------------------------------------ -->
+    <script>
+        var module = angular.module("myModule", []);
+        module.controller("myController", function ($scope, $http) {
+            $scope.jsonArray;
+
+            // ------------------------------------------------ Fetch needy function ------------------------------------------------
+            $scope.fetchUsersData = function () {
+                var url = "/fetch-service-availer-data";
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    $scope.jsonArray = response.data;
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
+        });
+    </script>
+
+    <!-- ------------------------------------------------------ AngularJS ends ------------------------------------------------------ -->
+</head>
+
+<body ng-app="myModule" ng-controller="myController">
+    <!-- ------------------------------------------------------ Navbar ------------------------------------------------------ -->
+    <nav class="navbar bg-body-tertiary mb-4">
+        <div class="container-fluid px-3 py-2">
+            <a class="navbar-brand" href="#">
+                <img src="pics/logo.png" class="d-inline-block align-text-top me-2">
+                Readyshack
+            </a>
+        </div>
+    </nav>
+
+    <!-- ------------------------------------------------------ Needy details table ------------------------------------------------------ -->
+    <div class="container">
+        <div class="row">
+            <h1 class="text-center">Service availers panel</h1>
+        </div>
+        <div class="row mt-3 mb-3">
+            <center>
+                <button type="button" class="btn btn-primary" ng-click="fetchUsersData();">Fetch service availers data</button>
+            </center>
+        </div>
+        <table class="table table-light table-striped text-center">
+            <tr>
+                <th>S No.</th>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Date of birth</th>
+                <th>Gender</th>
+                <th>City</th>
+                <th>Address</th>
+                <th>Picture</th>
+            </tr>
+            
+            <tr ng-repeat="obj in jsonArray">
+                <td>{{$index+1}}</td>
+                <td>{{obj.email}}</td>
+                <td>{{obj.name}}</td>
+                <td>{{obj.mobile}}</td>
+                <td>{{obj.dob.substring(0, 10)}}</td>
+                <td>{{obj.gender}}</td>
+                <td>{{obj.city}}</td>
+                <td>{{obj.address}}</td>
+                <td><img src="uploads/{{obj.pic}}" height="100px" width="100px"></td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+
+</html>
