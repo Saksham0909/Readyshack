@@ -10,7 +10,7 @@ const app = express();
 
 
 // ------------------------------------------------ Server configuration ------------------------------------------------
-const dbCon = mysql.createConnection(dbConfig)
+const dbCon = mysql.createConnection(dbConfig);
 dbCon.connect((err) => {
   if(err == null){
     app.listen(config.PORT, () => {
