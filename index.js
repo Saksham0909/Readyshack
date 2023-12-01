@@ -275,6 +275,7 @@ app.get("/resume-users-data", (req, resp) => {
     });
 });
 
+
 // ------------------------------------------------ Admin service provider panel page API ------------------------------------------------
 app.get("/fetch-service-provider-data", (req, resp) => {
   dbCon.query("select * from serviceprovider", (err, result) => {
@@ -305,6 +306,7 @@ app.get("/unavail-service", (req, resp) => {
       (err == null) ? resp.send("Service unavailed successfully") : resp.send(err);
     });
 });
+
 
 // ------------------------------------------------ Service finder page API ------------------------------------------------
 app.get("/fetch-cities", function (req, resp) {
