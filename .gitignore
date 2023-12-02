@@ -127,4 +127,4 @@ dist
 .pnp.*
 
 # All the personal configuration files
-.config/
+config/
