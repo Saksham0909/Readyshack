@@ -160,25 +160,14 @@ app.get("/doadd", (req, resp) => {
 });
 
 
-// **------------------------------------------------ Providers dashboard page API ------------------------------------------------
+// ------------------------------------------------ Providers dashboard page API ------------------------------------------------
 app.get("/changepassword", (req, resp) => {
   let email = req.query.emailsent;
   let oldpassword = req.query.oldpasswordsent;
   let confirmedpassword = req.query.confirmedpassword;
-
-  dbCon.query("select * from users where email = ? and pwd = ?", [email, oldpassword], (err, result) => {
-      if (err == null) {
-        if (result.length == 1 && result[0].status == 1) {
-          dbCon.query("update users set pwd = ? where email = ?", [confirmedpassword, email], function (err) {
-              (err==null) ? resp.send("Password changed successfully") : resp.send(err);
-            });
-        } else {
-          resp.send("No user found");
-        }
-      } else {
-        resp.send(err);
-      }
-    });
+  dbCon.query("update users set pwd = ? where email = ? and pwd = ? and status = 1", [confirmedpassword, email, oldpassword], (err) => {
+    (err==null) ? resp.send("Password changed successfully") : resp.send("Password cannot be changed");
+  });
 });
 
 
