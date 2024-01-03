@@ -82,6 +82,21 @@
             $scope.getIndex = function (index) {
                 $scope.selectedData = $scope.jsonProvidersArray[index];
             }
+
+            // ------------------------------------------------ Book selected service provider function ------------------------------------------------
+            $scope.bookService = function (providerEmail) {
+                var userEmail = localStorage.getItem("activeuser");
+                var serviceSelected = $scope.txtservice.services;
+                var url = "/book-service?userEmail=" + userEmail + "&serviceSelected=" + serviceSelected + "&providerEmail=" + providerEmail;
+                console.log(url);
+                $http.get(url).then(done, fail);
+                function done(response) {
+                    alert(response.data);
+                }
+                function fail(response) {
+                    alert(response.data);
+                }
+            }
         });
     </script>
 
@@ -194,6 +209,15 @@
                         <div class="row">
                             <div class="col-md-10 offset-md-1">
                                 <p>Available between:- {{selectedData.ahours}}</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-4 offset-md-4">
+                                <div class="row">
+                                    <button type="button" class="btn btn-primary" ng-click="bookService(selectedData.email);">Book Service</button>
+                                </div>
                             </div>
                         </div>
 

@@ -25,10 +25,16 @@ select * from serviceavailer;
 delete from serviceavailer;
 
 
-# ---------------------------------------------------- Creating table to store available available services data ----------------------------------------------------
+# ---------------------------------------------------- Creating table to store available services data ----------------------------------------------------
 create table servicesavailable(id int AUTO_INCREMENT primary key, email varchar(50), name varchar(30), mobile varchar(12), services varchar(50), charges int);
 select * from servicesavailable;
 delete from servicesavailable;
+
+
+# ---------------------------------------------------- Creating table to store notifications data ----------------------------------------------------
+create table notifications(userEmail varchar(50), service varchar(30), providerEmail varchar(50));
+select * from notifications;
+delete from notifications;
 
 
 # ---------------------------------------------------- Run these queries if you want to delete the database or a table ----------------------------------------------------

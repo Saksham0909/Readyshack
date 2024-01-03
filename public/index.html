@@ -183,6 +183,44 @@
                     alert("Enter valid details");
                 }
             });
+
+            // ------------------------------------------------ Forgot password function ------------------------------------------------
+            $("#forgotPwd").click(function () {
+                var ans = prompt("Do you really want to retrieve your password?\nYES / NO");
+                if(ans === "YES"){
+                    var email = prompt("Enter your email:- ");
+                    var obj = {
+                        type: "get",
+                        url: "/forgot-password",
+                        data: {
+                            emailentered: email,
+                        }
+                    }
+
+                    $.ajax(obj).done(function (resp) {
+                        var otpEntered = prompt("Enter the otp sent on your mail:- ");
+                        if(otpEntered == resp){
+                            var obj = {
+                                type: "get",
+                                url: "/send-password",
+                                data: {
+                                    emailentered: email,
+                                }
+                            }
+
+                            $.ajax(obj).done(function (resp) {
+                                alert("Your password has been sent on your mail");
+                            }).fail(function (err) {
+                                alert(err);
+                            });
+                        }else{
+                            alert("OTP entered is not valid");
+                        }
+                    }).fail(function (err) {
+                        alert(err);
+                    });
+                }
+            });
         });
     </script>
 
@@ -432,6 +470,9 @@
                                         <i id="logineye" class="fa-solid fa-eye"></i>
                                     </span>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <u id = "forgotPwd" class = "mt-3">Forgot password</u>
                             </div>
                         </div>
                     </form>

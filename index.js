@@ -91,6 +91,55 @@ app.get("/dologin", (req, resp) => {
     });
 });
 
+app.get("/forgot-password", (req, resp) => {
+  let email = req.query.emailentered;
+  let otp = "";
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    (error) ? console.log(error) : console.log(`Email sent`);
+  });
+
+  for(let i = 0; i < 6; i++){
+    otp += Math.floor(10 * (Math.random()));
+  }
+
+  let mailOptions = {
+    from: mailConfig.user,
+    to: email,
+    subject: "Forgotton password request on Readyshack.com",
+    text: `Your OTP to retrieve your password is:- ${otp}. With regards from Readyshack`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if(error == null){
+      console.log(`Email sent`);
+      resp.send(otp);
+    }else{
+      console.log(error);
+    }
+  });
+});
+
+app.get("/send-password", (req, resp) => {
+  let email = req.query.emailentered;
+  dbCon.query("select pwd from users where email = ?", [email], (err, result) => {
+    if (err == null) {
+      let mailOptions = {
+        from: mailConfig.user,
+        to: email,
+        subject: "Retrieved password on Readyshack.com",
+        text: `Your password to login on Readyshack.com is:- ${result[0].pwd}. With regards from Readyshack`
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        (error) ? console.log(error) : console.log(`Email sent`);
+      });
+      resp.send("Your password has been sent on your mail id")
+    } else {
+      resp.send(err);
+    }
+  });
+});
+
 
 // ------------------------------------------------ Provider profile page API ------------------------------------------------
 app.get("/profile-provider-search", (req, resp) => {
@@ -167,6 +216,13 @@ app.get("/changepassword", (req, resp) => {
   let confirmedpassword = req.query.confirmedpassword;
   dbCon.query("update users set pwd = ? where email = ? and pwd = ? and status = 1", [confirmedpassword, email, oldpassword], (err) => {
     (err==null) ? resp.send("Password changed successfully") : resp.send("Password cannot be changed");
+  });
+});
+
+app.get("/fetch-notifications", (req, resp) => {
+  let userEmail = req.query.user;
+  dbCon.query("select * from notifications where providerEmail = ?", [userEmail], (err,result) => {
+    (err==null) ? resp.send(result) : resp.send(err);
   });
 });
 
@@ -315,5 +371,29 @@ app.get("/fetch-providers", (req,resp) => {
   let city = req.query.cityselected;
   dbCon.query("select serviceprovider.email, serviceprovider.name, serviceprovider.mobile, serviceprovider.address, serviceprovider.city, serviceprovider.ahours, servicesavailable.services from serviceprovider inner join servicesavailable on serviceprovider.email = servicesavailable.email where servicesavailable.services = ? and serviceprovider.city=?", [service,city], (err,result) => {
     (err==null) ? resp.send(result) : resp.send(err);
+  });
+});
+
+app.get("/book-service", (req,resp) => {
+  let userEmail = req.query.userEmail;
+  let serviceSelected = req.query.serviceSelected;
+  let providerEmail = req.query.providerEmail;
+
+  let mailOptions = {
+    from: mailConfig.user,
+    to: providerEmail,
+    subject: "Someone has ordered your service",
+    text: `Welcome ${providerEmail}, your service ${serviceSelected} has been booked by ${userEmail} through our website. With regards from Readyshack`
+  };
+
+  dbCon.query("insert into notifications values(?,?,?)", [userEmail, serviceSelected, providerEmail], (err) => {
+    if(err==null){
+      transporter.sendMail(mailOptions, (error) => {
+        (error) ? console.log(error) : console.log(`Email sent`);
+      });
+      resp.send("Your service has been booked successfully");
+    }else{
+      resp.send(err);
+    }
   });
 });
