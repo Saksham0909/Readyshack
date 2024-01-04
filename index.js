@@ -95,10 +95,6 @@ app.get("/forgot-password", (req, resp) => {
   let email = req.query.emailentered;
   let otp = "";
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    (error) ? console.log(error) : console.log(`Email sent`);
-  });
-
   for(let i = 0; i < 6; i++){
     otp += Math.floor(10 * (Math.random()));
   }
