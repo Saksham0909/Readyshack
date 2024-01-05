@@ -205,7 +205,7 @@ app.get("/doadd", (req, resp) => {
 });
 
 
-// ------------------------------------------------ Providers dashboard page API ------------------------------------------------
+// ------------------------------------------------ Common dashboard page API ------------------------------------------------
 app.get("/changepassword", (req, resp) => {
   let email = req.query.emailsent;
   let oldpassword = req.query.oldpasswordsent;
@@ -215,6 +215,8 @@ app.get("/changepassword", (req, resp) => {
   });
 });
 
+
+// ------------------------------------------------ Providers dashboard page API ------------------------------------------------
 app.get("/fetch-notifications", (req, resp) => {
   let userEmail = req.query.user;
   dbCon.query("select * from notifications where providerEmail = ?", [userEmail], (err,result) => {
