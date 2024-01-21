@@ -3,9 +3,7 @@ const express = require("express");
 const fileuploader = require("express-fileupload");
 const nodemailer = require("nodemailer");
 const mysql = require("mysql2");
-const config = require("./config/config");
-const dbConfig = require("./config/dbConfig");
-const mailConfig = require("./config/mailConfig");
+const {PORT, dbConfig, mailConfig} = require("./config/config");
 const app = express();
 
 
@@ -13,10 +11,8 @@ const app = express();
 const dbCon = mysql.createConnection(dbConfig);
 dbCon.connect((err) => {
   if(err == null){
-    app.listen(config.PORT, () => {
-      console.log(`Readyshack server started at port:- ${config.PORT}`);
-      console.log(`Successfully connected to:- ${dbConfig.database}`);
-    });
+    app.listen(PORT)
+    console.log(`Server started at port:- ${PORT}\nSuccessfully connected to:- ${dbConfig.database}`);
   }else{
     console.log(err);
   }
