@@ -3,6 +3,7 @@ const express = require("express");
 const fileuploader = require("express-fileupload");
 const nodemailer = require("nodemailer");
 const mysql = require("mysql2");
+const path = require("path");
 const {PORT, dbConfig, mailConfig} = require("./config/config");
 const app = express();
 
@@ -12,7 +13,7 @@ const dbCon = mysql.createConnection(dbConfig);
 dbCon.connect((err) => {
   if(err == null){
     app.listen(PORT)
-    console.log(`Server started at port:- ${PORT}\nSuccessfully connected to:- ${dbConfig.database}`);
+    console.log(`Server started at port:- ${PORT}\nConnected to ${dbConfig.database} successfully`);
   }else{
     console.log(err);
   }
@@ -152,9 +153,9 @@ app.post("/profile-provider-submit", (req, resp) => {
   let ahours = req.body.fromtime + "," + req.body.totime;
 
   if (req.files != null) {
-    pic = req.files.txtimage.name;
-    let path = process.cwd() + "/public/uploads/" + pic;
-    req.files.txtimage.mv(path);
+    pic = new Date().getTime() + req.files.txtimage.name;
+    let imagePath = path.join(__dirname, "/public/uploads/", pic);
+    req.files.txtimage.mv(imagePath);
   }
 
   dbCon.query("insert into serviceprovider values(?,?,?,?,?,?,?,?)", [email, name, contact, address, city, proof, pic, ahours], (err) => {
@@ -170,13 +171,12 @@ app.post("/profile-provider-update", (req, resp) => {
   let city = req.body.txtcity;
   let proof = req.body.txtid;
   let pic = "nopic.jpg";
-  let ahours = "";
-  ahours = req.body.fromtime + "," + req.body.totime;
+  let ahours = req.body.fromtime + "," + req.body.totime;
 
   if (req.files != null) {
-    pic = req.files.txtimage.name;
-    let path = process.cwd() + "/public/uploads/" + pic;
-    req.files.txtimage.mv(path);
+    pic = new Date().getTime() + req.files.txtimage.name;
+    let imagePath = path.join(__dirname, "/public/uploads/", pic);
+    req.files.txtimage.mv(imagePath);
   } else {
     pic = req.body.hdnpicname;
   }
@@ -252,9 +252,9 @@ app.post("/profile-availer-submit", (req, resp) => {
   let pic = "nopic.jpg";
 
   if (req.files != null) {
-    pic = req.files.txtid.name;
-    let path = process.cwd() + "/public/uploads/" + pic;
-    req.files.txtid.mv(path);
+    pic = new Date().getTime() + req.files.txtid.name;
+    let imagePath = path.join(__dirname, "/public/uploads/", pic);
+    req.files.txtimage.mv(imagePath);
   }
 
   dbCon.query("insert into serviceavailer values(?,?,?,?,?,?,?,?)", [email, name, contact, dob, gender, city, address, pic], (err) => {
@@ -273,9 +273,9 @@ app.post("/profile-availer-update", (req, resp) => {
   let pic = "nopic.jpg";
 
   if (req.files != null) {
-    pic = req.files.txtid.name;
-    let path = process.cwd() + "/public/uploads/" + pic;
-    req.files.txtid.mv(path);
+    pic = new Date().getTime() + req.files.txtid.name;
+    let imagePath = path.join(__dirname, "/public/uploads/", pic);
+    req.files.txtimage.mv(imagePath);
   } else {
     pic = req.body.hdnpicname;
   }
